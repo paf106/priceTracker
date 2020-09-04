@@ -6,11 +6,13 @@ URL = 'https://www.mediamarkt.es/es/product/_cargador-inal%C3%A1mbrico-belkin-bo
 # request all the data from the website
 page = requests.get(URL)
 
-soup = BeautifulSoup(page.text, 'html.parser')
+soup = BeautifulSoup(page.content, 'html.parser')
 
-title = soup.find('div', { "class" : "price"}).get_text()
-#price = soup.find(id="priceblock_ourprice")
+# We get the product title and the price
+productTitle = soup.find("h1").get_text()
+productPrice = soup.find('div', { "class" : "price"}).get_text()
 
-print(title)
+print(productTitle.strip())
+print(productPrice.strip())
 
 
