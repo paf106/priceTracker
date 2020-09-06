@@ -47,4 +47,17 @@ elif (URL.find("worten") != -1):
         print("Price: "+productPrice.strip())
     
     except AttributeError:
-        print("Product sold out or not trackable :(") 
+        print("Product sold out or not trackable :(")
+
+elif (URL.find("pccomponentes") != -1):
+    # WORKING
+    # We get the product title and the price
+    try:
+        productTitle = soup.find("h1").get_text()
+        productPrice = soup.find('div', {"id" : "precio-main"}).get_text()
+
+        print("Product name: "+productTitle.strip())
+        print("Price: "+productPrice.strip())
+    
+    except AttributeError:
+        print("Product sold out or not trackable :(")
