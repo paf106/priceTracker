@@ -1,21 +1,30 @@
 import requests
 from bs4 import BeautifulSoup
 
-#URL = 'https://www.mediamarkt.es/es/product/_cargador-inal%C3%A1mbrico-belkin-boost-up-para-smartphones-qi-10w-pantalla-led-blanco-1457651.html'
-URL = str(input("Escribe la url: "))
+URL = str(input("Type an URL: "))
 
 # Request all the data from the website
-page = requests.get(URL)
-soup = BeautifulSoup(page.content, 'html.parser')
+try:
+    page = requests.get(URL)
+    soup = BeautifulSoup(page.content, 'html.parser')
+
+except requests.exceptions.MissingSchema:
+    print("Url not valid")
+except Exception:
+    print("Something went wrong")
 
 if (URL.find("mediamarkt") != -1):
     # WORKING
     # We get the product title and the price
-    productTitle = soup.find("h1").get_text()
-    productPrice = soup.find('div', { "class" : "price"}).get_text()
+    try:
+        productTitle = soup.find("h1").get_text()
+        productPrice = soup.find('div', { "class" : "price"}).get_text()
 
-    print("Nombre producto: "+productTitle.strip())
-    print("Precio: "+productPrice.strip())
+        print("Product name: "+productTitle.strip())
+        print("Price: "+productPrice.strip())
+
+    except AttributeError:
+        print("Product sold out or not trackable :(") 
     
 elif (URL.find("aliexpress") != -1):
     # NOT WORKING
@@ -30,8 +39,12 @@ elif (URL.find("aliexpress") != -1):
 elif (URL.find("worten") != -1):
     # WORKING
     # We get the product title and the price
-    productTitle = soup.find("h1").get_text()
-    productPrice = soup.find('span', { "class" : "w-product__price__current"}).get_text()
+    try:
+        productTitle = soup.find("h1").get_text()
+        productPrice = soup.find('span', { "class" : "w-product__price__current"}).get_text()
 
-    print("Nombre producto: "+productTitle.strip())
-    print("Precio: "+productPrice.strip())
+        print("Product name: "+productTitle.strip())
+        print("Price: "+productPrice.strip())
+    
+    except AttributeError:
+        print("Product sold out or not trackable :(") 
