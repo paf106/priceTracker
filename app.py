@@ -5,16 +5,24 @@ from tkinter import *
 # Main Window
 root = Tk()
 root.title("Price Tracker")
-root.geometry("400x400")
+root.geometry("450x450")
 
 # Search field
 inputField = Entry(root,width=38)
 inputField.insert(0,"Type an URL")
 inputField.grid(row=0, column=0)
 
+def button_clear():
+    inputField.delete(0, END)
+
+# Delete button
+    # Delete the content of the search field
+button_delete = Button(root, text="X", command=button_clear)
+button_delete.grid(row=0, column=1)
+
 # Search button
 button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()))
-button_Search.grid(row=0, column=1)
+button_Search.grid(row=0, column=2)
 
 def checkPrice(URL):
     # Request all the data from the website
