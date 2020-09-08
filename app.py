@@ -2,6 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 
+# importing messagebox class 
+from tkinter.messagebox import *
+
 # Main Window
 root = Tk()
 root.title("Price Tracker")
@@ -41,9 +44,9 @@ def checkPrice(URL):
         soup = BeautifulSoup(page.content, 'html.parser')
 
     except requests.exceptions.MissingSchema:
-        print("Url not valid")
+        print(showwarning("Warning", "URL not valid"))
     except Exception:
-        print("Something went wrong")
+        print(showerror("Error","Something went wrong"))
 
     if (URL.find("mediamarkt") != -1):
         # WORKING
@@ -55,7 +58,7 @@ def checkPrice(URL):
             printProductData(productTitle.strip(), productPrice.strip())
 
         except AttributeError:
-            print("Product sold out or not trackable :(") 
+            print(showinfo("Info", "Product sold out or not trackable :("))
         
     elif (URL.find("aliexpress") != -1):
         # NOT WORKING
@@ -78,7 +81,7 @@ def checkPrice(URL):
             print("Price: "+productPrice.strip())
         
         except AttributeError:
-            print("Product sold out or not trackable :(")
+            print(showinfo("Info", "Product sold out or not trackable :("))
 
     elif (URL.find("pccomponentes") != -1):
         # WORKING
@@ -91,6 +94,6 @@ def checkPrice(URL):
             print("Price: "+productPrice.strip())
         
         except AttributeError:
-            print("Product sold out or not trackable :(")
+            print(showinfo("Info", "Product sold out or not trackable :("))
 
 root.mainloop()
