@@ -10,10 +10,26 @@ root = Tk()
 root.title("Price Tracker")
 root.geometry("450x450")
 
+# History of products to be tracked
+history = []
+
 # Search field
 inputField = Entry(root,width=38)
 inputField.insert(0,"Type an URL")
-inputField.grid(row=0, column=0, pady=5, padx=5)
+inputField.grid(row=0, column=0, pady=5, padx=3, ipady=4)
+
+def showHistory():
+    historyWindow = Toplevel(root)
+    historyWindow.title("History products")
+    historyWindow.geometry("350x250")
+    
+    for link in history:
+        label_url = Label(historyWindow,text=link)
+        label_url.pack()
+        
+def clearHistory():
+    history.clear()
+    print(showinfo("History","History cleared"))
 
 def button_clear():
     inputField.delete(0, END)
@@ -23,19 +39,25 @@ def printProductData(name, price):
     label_productName = Label(root, text="Product name: "+ name[:45]+"...")
     label_productPrice = Label(root, text="Price: "+ price)
 
-    label_productName.grid(row=1, column=0, padx=5, pady=5, columnspan=3)
-    label_productPrice.grid(row=2, column=0, padx=5)
-
-    
+    label_productName.grid(row=2, column=0, padx=5, pady=5, columnspan=3)
+    label_productPrice.grid(row=3, column=0, padx=5)
 
 # Delete button
     # Delete the content of the search field
 button_delete = Button(root, text="X", command=button_clear)
-button_delete.grid(row=0, column=1, pady=5)
+button_delete.grid(row=0, column=1, pady=5, padx=1)
+
+# History button
+button_history = Button(root, text="History", width=34, command=showHistory)
+button_history.grid(row=1, column=0, padx=3)
+
+# Clear history button
+button_clearHistory = Button(root, text="Clear history", width=13, command=clearHistory)
+button_clearHistory.grid(row=1, column=1, columnspan=2)
 
 # Search button
-button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()))
-button_Search.grid(row=0, column=2, pady=5, padx=7)
+button_Search = Button(root, text="Search",width=8, command=lambda: checkPrice(inputField.get()))
+button_Search.grid(row=0, column=2, pady=5)
 
 def checkPrice(URL):
     # Request all the data from the website
@@ -57,6 +79,8 @@ def checkPrice(URL):
 
             printProductData(productTitle.strip(), productPrice.strip())
 
+            history.append(URL)
+
         except AttributeError:
             print(showinfo("Info", "Product sold out or not trackable :("))
         
@@ -64,12 +88,11 @@ def checkPrice(URL):
         # NOT WORKING
         # We get the product title and the price
         #productPrice = soup.find('h1', { "class" : "product"}).get_text()
-        #productTitle = soup.find('h1').get_text()
-        productPrice = soup.find('div', { "class" : "product-info"}).get_text()
+        productTitle = soup.find('span', { "class" : "price"}).get_text()
         
         print("Nombre producto: "+productTitle.strip())
         #print("Precio: "+productPrice.strip())
-
+    
     elif (URL.find("worten") != -1):
         # WORKING
         # We get the product title and the price
@@ -77,8 +100,9 @@ def checkPrice(URL):
             productTitle = soup.find("h1").get_text()
             productPrice = soup.find('span', { "class" : "w-product__price__current"}).get_text()
 
-            print("Product name: "+productTitle.strip())
-            print("Price: "+productPrice.strip())
+            printProductData(productTitle.strip(), productPrice.strip())
+
+            history.append(URL)
         
         except AttributeError:
             print(showinfo("Info", "Product sold out or not trackable :("))
@@ -90,8 +114,9 @@ def checkPrice(URL):
             productTitle = soup.find("h1").get_text()
             productPrice = soup.find('div', {"id" : "precio-main"}).get_text()
 
-            print("Product name: "+productTitle.strip())
-            print("Price: "+productPrice.strip())
+            printProductData(productTitle.strip(), productPrice.strip())
+
+            history.append(URL)
         
         except AttributeError:
             print(showinfo("Info", "Product sold out or not trackable :("))
