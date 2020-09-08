@@ -10,19 +10,29 @@ root.geometry("450x450")
 # Search field
 inputField = Entry(root,width=38)
 inputField.insert(0,"Type an URL")
-inputField.grid(row=0, column=0)
+inputField.grid(row=0, column=0, pady=5, padx=5)
 
 def button_clear():
     inputField.delete(0, END)
 
+def printProductData(name, price):
+
+    label_productName = Label(root, text="Product name: "+ name[:45]+"...")
+    label_productPrice = Label(root, text="Price: "+ price)
+
+    label_productName.grid(row=1, column=0, padx=5, pady=5, columnspan=3)
+    label_productPrice.grid(row=2, column=0, padx=5)
+
+    
+
 # Delete button
     # Delete the content of the search field
 button_delete = Button(root, text="X", command=button_clear)
-button_delete.grid(row=0, column=1)
+button_delete.grid(row=0, column=1, pady=5)
 
 # Search button
 button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()))
-button_Search.grid(row=0, column=2)
+button_Search.grid(row=0, column=2, pady=5, padx=7)
 
 def checkPrice(URL):
     # Request all the data from the website
@@ -42,8 +52,7 @@ def checkPrice(URL):
             productTitle = soup.find("h1").get_text()
             productPrice = soup.find('div', { "class" : "price"}).get_text()
 
-            print("Product name: "+productTitle.strip())
-            print("Price: "+productPrice.strip())
+            printProductData(productTitle.strip(), productPrice.strip())
 
         except AttributeError:
             print("Product sold out or not trackable :(") 
