@@ -15,6 +15,18 @@ label_dataFrame = Label(dataFrame,text="Only works with PcComponentes, Worten an
 label_dataFrame.grid()
 dataFrame.grid(row=2, column=0, columnspan=3, sticky="WE")
 
+# Menu
+MainMenu = Menu(root)
+root.config(menu=MainMenu)
+
+optionsMenu = Menu(MainMenu, tearoff=False)
+MainMenu.add_cascade(label="Options", menu=optionsMenu)
+optionsMenu.add_checkbutton(label="Send an email")
+optionsMenu.add_checkbutton(label="Notify me lower price")
+optionsMenu.add_separator()
+optionsMenu.add_command(label="About")
+optionsMenu.add_command(label="Exit", command=root.quit)
+
 # History of products to be tracked
 history = []
 
@@ -29,8 +41,75 @@ if os.path.isfile("favouriteProducts.txt"):
         favourite = [x for x in tempProducts if x.strip()]
         f.close()
 
+def checkPrice(URL):
+    # Request all the data from the website
+    try:
+        page = requests.get(URL)
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+        if (URL.find("mediamarkt") != -1):
+            # WORKING
+            # We get the product title and the price
+            try:
+                productTitle = soup.find("h1").get_text()
+                productPrice = soup.find('div', { "class" : "price"}).get_text()
+
+                printProductData(productTitle.strip(), productPrice.strip())
+
+                history.append(URL)
+
+            except AttributeError:
+                messagebox.showinfo("Info", "Product sold out or not trackable :(")
+            
+        elif (URL.find("aliexpress") != -1):
+            # NOT WORKING
+            # We get the product title and the price
+            #productPrice = soup.find('h1', { "class" : "product"}).get_text()
+            productTitle = soup.find('span', { "class" : "price"}).get_text()
+            
+            print("Nombre producto: "+productTitle.strip())
+            #print("Precio: "+productPrice.strip())
+        
+        elif (URL.find("worten") != -1):
+            # WORKING
+            # We get the product title and the price
+            try:
+                productTitle = soup.find("h1").get_text()
+                productPrice = soup.find('span', { "class" : "w-product__price__current"}).get_text()
+
+                printProductData(productTitle.strip(), productPrice.strip())
+
+                history.append(URL)
+            
+            except AttributeError:
+                messagebox.showinfo("Info", "Product sold out or not trackable :(")
+
+        elif (URL.find("pccomponentes") != -1):
+            # WORKING
+            # We get the product title and the price
+            try:
+                productTitle = soup.find("h1").get_text()
+                productPrice = soup.find('div', {"id" : "precio-main"}).get_text()
+
+                printProductData(productTitle.strip(), productPrice.strip())
+
+                history.append(URL)
+            
+            except AttributeError:
+                messagebox.showinfo("Info", "Product sold out or not trackable :(")
+    # Errors handling
+    except requests.exceptions.MissingSchema:
+        messagebox.showwarning("Warning", "URL not valid")
+    except requests.ConnectionError:
+        messagebox.showwarning("Connection Error", "Failed to establish connection, check your internet connection")
+    except requests.ConnectTimeout:
+        messagebox.showinfo("Connection Timeout", "Connection timeout")
+    except Exception:
+        messagebox.showerror("Error","Something went wrong")
+
 # Search field
 inputField = Entry(root,width=38)
+inputField.bind("<Return>",lambda event: checkPrice(URL= inputField.get())) 
 inputField.grid(row=0, column=0, ipady=4, pady=5, padx=2, sticky="WE")
 
 def updateScreen(frame):
@@ -58,7 +137,6 @@ def addFavouriteProduct():
         
                 # Add favourite products to a list
         favourite.append(urlToAdd)
-        print(favourite)
     else:
         messagebox.showinfo("Empty field","You must write something")
 
@@ -129,71 +207,7 @@ button_clearHistory.grid(row=1, column=2, sticky="EW")
 button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()))
 button_Search.grid(row=0, column=2, sticky="EW")
 
-def checkPrice(URL):
-    # Request all the data from the website
-    try:
-        page = requests.get(URL)
-        soup = BeautifulSoup(page.content, 'html.parser')
 
-        if (URL.find("mediamarkt") != -1):
-            # WORKING
-            # We get the product title and the price
-            try:
-                productTitle = soup.find("h1").get_text()
-                productPrice = soup.find('div', { "class" : "price"}).get_text()
-
-                printProductData(productTitle.strip(), productPrice.strip())
-
-                history.append(URL)
-
-            except AttributeError:
-                messagebox.showinfo("Info", "Product sold out or not trackable :(")
-            
-        elif (URL.find("aliexpress") != -1):
-            # NOT WORKING
-            # We get the product title and the price
-            #productPrice = soup.find('h1', { "class" : "product"}).get_text()
-            productTitle = soup.find('span', { "class" : "price"}).get_text()
-            
-            print("Nombre producto: "+productTitle.strip())
-            #print("Precio: "+productPrice.strip())
-        
-        elif (URL.find("worten") != -1):
-            # WORKING
-            # We get the product title and the price
-            try:
-                productTitle = soup.find("h1").get_text()
-                productPrice = soup.find('span', { "class" : "w-product__price__current"}).get_text()
-
-                printProductData(productTitle.strip(), productPrice.strip())
-
-                history.append(URL)
-            
-            except AttributeError:
-                messagebox.showinfo("Info", "Product sold out or not trackable :(")
-
-        elif (URL.find("pccomponentes") != -1):
-            # WORKING
-            # We get the product title and the price
-            try:
-                productTitle = soup.find("h1").get_text()
-                productPrice = soup.find('div', {"id" : "precio-main"}).get_text()
-
-                printProductData(productTitle.strip(), productPrice.strip())
-
-                history.append(URL)
-            
-            except AttributeError:
-                messagebox.showinfo("Info", "Product sold out or not trackable :(")
-    # Errors handling
-    except requests.exceptions.MissingSchema:
-        messagebox.showwarning("Warning", "URL not valid")
-    except requests.ConnectionError:
-        messagebox.showwarning("Connection Error", "Failed to establish connection, check your internet connection")
-    except requests.ConnectTimeout:
-        messagebox.showinfo("Connection Timeout", "Connection timeout")
-    except Exception:
-        messagebox.showerror("Error","Something went wrong")
 
 root.mainloop()
 
