@@ -67,8 +67,7 @@ def writeEmailToFile():
         with open("email.txt", "w") as f:
             f.write(email)
             f.close()
-            for i in emailToSend:
-                emailToSend.remove(i)
+            emailToSend.clear()
             emailToSend.append(email)
             messagebox.showinfo("Info", "Email "+email+" saved")
     else:
@@ -79,9 +78,7 @@ def writeEmailToFile():
 def readEmailFile():
     if os.path.isfile("email.txt"):
         with open("email.txt", "r") as f:
-            for i in emailToSend:
-                emailToSend.remove(i)
-            
+            emailToSend.clear()
             emailToSend.append(f.readline())
             f.close()
             button_clear(inputField_email)
@@ -130,15 +127,15 @@ if os.path.isfile("favouriteProducts.txt"):
 def checkPrice(URL):
     # Request all the data from the website
     try:
-        page = requests.get(URL)
-        soup = BeautifulSoup(page.content, 'html.parser')
+        page = requests.get(URL).text
+        soup = BeautifulSoup(page, 'lxml')
 
         if (URL.find("mediamarkt") != -1):
             # WORKING
             # We get the product title and the price
             try:
-                productTitle = soup.find("h1").get_text()
-                productPrice = soup.find('div', { "class" : "price"}).get_text()
+                productTitle = soup.find("h1").text
+                productPrice = soup.find('div', class_="price").text
 
                 printProductData(productTitle.strip(), productPrice.strip())
 
@@ -151,7 +148,7 @@ def checkPrice(URL):
             # NOT WORKING
             # We get the product title and the price
             #productPrice = soup.find('h1', { "class" : "product"}).get_text()
-            productTitle = soup.find(class_="product-price-value").get_text()
+            productTitle = soup.find('span', class_="product-price-value").text
             
             print("Nombre producto: "+productTitle.strip())
             #print("Precio: "+productPrice.strip())
@@ -160,22 +157,22 @@ def checkPrice(URL):
             # WORKING
             # We get the product title and the price
             try:
-                productTitle = soup.find("h1").get_text()
-                productPrice = soup.find('span', { "class" : "w-product__price__current"}).get_text()
+                productTitle = soup.find("h1").text
+                productPrice = soup.find('span', class_="w-product__price__current iss-product-current-price")["content"]
 
                 printProductData(productTitle.strip(), productPrice.strip())
 
                 history.append(URL)
             
-            except AttributeError:
+            except TypeError:
                 messagebox.showinfo("Info", "Product sold out or not trackable :(")
 
         elif (URL.find("pccomponentes") != -1):
             # WORKING
             # We get the product title and the price
             try:
-                productTitle = soup.find("h1").get_text()
-                productPrice = soup.find('div', {"id" : "precio-main"}).get_text()
+                productTitle = soup.find("h1").text
+                productPrice = soup.find('div',id="precio-main").text
 
                 printProductData(productTitle.strip(), productPrice.strip())
 
