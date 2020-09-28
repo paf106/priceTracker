@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import messagebox
 import os
 import smtplib
+import csv
 
 # Main Window
 root = Tk()
@@ -19,8 +20,37 @@ dataFrame.grid(row=2, column=0, columnspan=3, sticky="WE")
 # Menu
 MainMenu = Menu(root)
 root.config(menu=MainMenu)
-def configureEmail():
 
+def readFavouriteProducts():
+    if os.path.isfile("favouriteProducts.csv"):
+        with open("favouriteProducts.csv", "r") as csvFile:
+            fieldnames= ["alias", "productName", "url"]
+            csvReader = csv.DictReader(csvFile, fieldnames=fieldnames)
+            csvReader.__next__()
+            for line in csvReader:
+                button_favouriteProduct = Button(favouriteWindow, text=line["productName"], command=lambda: checkPrice(line["url"]))
+                button_favouriteProduct.grid()
+            csvFile.close()
+
+def addFavouriteProduct():
+    urlToAdd = inputField_favouriteProduct.get()
+    fieldnames= ["alias", "productName", "url"]
+    if (len(urlToAdd)!= 0 and urlToAdd.find(" ") == -1):
+        if os.path.isfile("favouriteProducts.csv"):
+            with open("favouriteProducts.csv", "a+") as csvFile:
+                csvWriter = csv.DictWriter(csvFile, fieldnames=fieldnames)
+                csvWriter.writerow({"alias": "none", "productName": urlToAdd, "url": urlToAdd})
+                csvFile.close()
+        else:
+            with open("favouriteProducts.csv", "w") as csvFile:
+                csvWriter = csv.DictWriter(csvFile, fieldnames=fieldnames)
+                csvWriter.writeheader()
+                csvWriter.writerow({"alias": "none", "productName": urlToAdd, "url": urlToAdd})
+                csvFile.close()
+    else:
+        messagebox.showinfo("Empty field","You must write something")
+
+def configureEmail():
     global configureEmailWindow
     configureEmailWindow = Toplevel(root)
     configureEmailWindow.title("Configure email")
@@ -113,17 +143,6 @@ def sendEmail(forwarder):
     except smtplib.SMTPDataError:
         pass
 
-
-
-
-# Check if "favouriteProducts.txt" exists and append the items to a list
-if os.path.isfile("favouriteProducts.txt"):
-    with open("favouriteProducts.txt", "r") as f:
-        tempProducts = f.read()
-        tempProducts = tempProducts.split(",")
-        favourite = [x for x in tempProducts if x.strip()]
-        f.close()
-
 def checkPrice(URL):
     # Request all the data from the website
     try:
@@ -214,17 +233,6 @@ def deleteFavouriteProduct(product):
     pass
     
 
-def addFavouriteProduct():
-    urlToAdd = inputField_favouriteProduct.get()
-    if (len(urlToAdd)!= 0 and urlToAdd.find(" ") == -1):
-        button_searchFavourite = Button(favouriteWindow, text=urlToAdd, command= lambda:checkPrice(urlToAdd))
-        button_searchFavourite.grid()
-        
-                # Add favourite products to a list
-        favourite.append(urlToAdd)
-    else:
-        messagebox.showinfo("Empty field","You must write something")
-
 def showFavourite():
     global favouriteWindow
     favouriteWindow = Toplevel(root)
@@ -245,8 +253,7 @@ def showFavourite():
     button_deleteFavourite = Button(favouriteWindow, text="X", command=lambda: button_clear(inputField_favouriteProduct))
     button_deleteFavourite.grid(row=0, column=1, sticky="WE")
 
-    for x in favourite:
-        button_favouriteProduct = Button(favouriteWindow,text=x, command = lambda: checkPrice(x)).grid()
+    readFavouriteProducts()
 
 
 def clearHistory():
@@ -290,12 +297,4 @@ button_clearHistory.grid(row=1, column=2, sticky="EW")
 button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()))
 button_Search.grid(row=0, column=2, sticky="EW")
 
-
-
 root.mainloop()
-
-# Create a file to store favourite products
-with open("favouriteProducts.txt", "w") as f:
-    for product in favourite:
-        f.write(product + ",")
-    f.close()
