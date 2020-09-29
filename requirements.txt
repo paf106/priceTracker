@@ -1,0 +1,5 @@
+#Install BeautifulSoup package
+beautifulsoup4
+
+#Install Requests package
+requests-unixsocket

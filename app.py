@@ -9,7 +9,7 @@ import csv
 # Main Window
 root = Tk()
 root.title("Price Tracker")
-root.geometry("620x450")
+root.geometry("530x250")
 
 # Root frame
 dataFrame = LabelFrame(root)
@@ -28,8 +28,8 @@ def readFavouriteProducts():
             csvReader = csv.DictReader(csvFile, fieldnames=fieldnames)
             csvReader.__next__()
             for line in csvReader:
-                button_favouriteProduct = Button(favouriteWindow, text=line["productName"], command=lambda: checkPrice(line["url"]))
-                button_favouriteProduct.grid()
+                button_favouriteProduct = Button(favouriteWindow, text=line["productName"], command=lambda line=line: checkPrice(line["url"]))
+                button_favouriteProduct.grid(column=0)
             csvFile.close()
 
 def addFavouriteProduct():
@@ -47,6 +47,10 @@ def addFavouriteProduct():
                 csvWriter.writeheader()
                 csvWriter.writerow({"alias": "none", "productName": urlToAdd, "url": urlToAdd})
                 csvFile.close()
+
+        button_favouriteProduct = Button(favouriteWindow, text=urlToAdd, command=lambda: checkPrice(urlToAdd))
+        button_favouriteProduct.grid(column=0)
+        button_clear(inputField_favouriteProduct)
     else:
         messagebox.showinfo("Empty field","You must write something")
 
