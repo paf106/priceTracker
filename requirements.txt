@@ -3,3 +3,6 @@ beautifulsoup4
 
 #Install Requests package
 requests-unixsocket
+
+#Install parser
+lxml
