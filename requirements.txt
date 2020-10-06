@@ -6,3 +6,6 @@ requests-unixsocket
 
 #Install parser
 lxml
+
+#Install themes
+ttkthemes
