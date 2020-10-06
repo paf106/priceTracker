@@ -5,17 +5,18 @@ from tkinter import messagebox
 import os
 import smtplib
 import csv
+from ttkthemes import themed_tk as tk
 
 # Main Window
-root = Tk()
+root = tk.ThemedTk(theme="breeze")
 root.title("Price Tracker")
 root.geometry("530x250")
 
 # Root frame
-dataFrame = LabelFrame(root)
-label_dataFrame = Label(dataFrame,text="Only works with PcComponentes, Worten and Mediamarkt")
-label_dataFrame.grid()
+dataFrame = LabelFrame(root, bg="white")
 dataFrame.grid(row=2, column=0, columnspan=3, sticky="WE")
+label_dataFrame = Label(dataFrame,text="Only works with PcComponentes, Worten and Mediamarkt", bg="white")
+label_dataFrame.grid()
 
 # Menu
 MainMenu = Menu(root)
@@ -28,6 +29,7 @@ def readFavouriteProducts():
             csvReader = csv.DictReader(csvFile, fieldnames=fieldnames)
             csvReader.__next__()
             for line in csvReader:
+                # Button that shows the url product
                 button_favouriteProduct = Button(favouriteWindow, text=line["productName"], command=lambda line=line: checkPrice(line["url"]))
                 button_favouriteProduct.grid(column=0)
             csvFile.close()
@@ -62,7 +64,7 @@ def configureEmail():
 
     # Field to write an email
     global inputField_email
-    inputField_email = Entry(configureEmailWindow,width=38)
+    inputField_email = Entry(configureEmailWindow, width=38, bg="white")
     inputField_email.grid(row=0, column=0, pady=5, padx=3, ipady=4)
 
     readEmailFile()
@@ -88,9 +90,6 @@ optionsMenu.add_command(label="Exit", command=root.quit)
 # History of products to be tracked
 history = []
 
-# Favourite products
-favourite = []
-
 # Email to send
 emailToSend = []
 
@@ -107,8 +106,7 @@ def writeEmailToFile():
     else:
         messagebox.showwarning("Warning", "Don't leave it blank or type white spaces")
     
-
-# check if the file where an email is going to be written is created
+# check if the email file exists
 def readEmailFile():
     if os.path.isfile("email.txt"):
         with open("email.txt", "r") as f:
@@ -166,15 +164,6 @@ def checkPrice(URL):
 
             except AttributeError:
                 messagebox.showinfo("Info", "Product sold out or not trackable :(")
-            
-        elif (URL.find("aliexpress") != -1):
-            # NOT WORKING
-            # We get the product title and the price
-            #productPrice = soup.find('h1', { "class" : "product"}).get_text()
-            productTitle = soup.find('span', class_="product-price-value").text
-            
-            print("Nombre producto: "+productTitle.strip())
-            #print("Precio: "+productPrice.strip())
         
         elif (URL.find("worten") != -1):
             # WORKING
@@ -203,6 +192,7 @@ def checkPrice(URL):
             
             except AttributeError:
                 messagebox.showinfo("Info", "Product sold out or not trackable :(")
+                
     # Errors handling
     except requests.exceptions.MissingSchema:
         messagebox.showwarning("Warning", "URL not valid")
@@ -214,11 +204,6 @@ def checkPrice(URL):
         messagebox.showinfo("Info", "Product sold out or not trackable :(")
     except Exception:
        messagebox.showerror("Error","Something went wrong")
-
-# Search field
-inputField = Entry(root,width=38)
-inputField.bind("<Return>",lambda event: checkPrice(URL= inputField.get())) 
-inputField.grid(row=0, column=0, ipady=4, pady=5, padx=2, sticky="WE")
 
 def updateScreen(frame):
     for widget in frame.winfo_children():
@@ -245,11 +230,11 @@ def showFavourite():
 
     # Field to write an url
     global inputField_favouriteProduct
-    inputField_favouriteProduct = Entry(favouriteWindow,width=38)
+    inputField_favouriteProduct = Entry(favouriteWindow,width=38, bg="white")
     inputField_favouriteProduct.grid(row=0, column=0, pady=5, padx=3, ipady=4)
 
     # Add button
-    button_Add = Button(favouriteWindow, text="+", command=addFavouriteProduct)
+    button_Add = Button(favouriteWindow, text="Add", command=addFavouriteProduct, bg="#c9f9ff")
     button_Add.grid(row=0, column=2, sticky="WE")
 
     # Delete button
@@ -273,8 +258,8 @@ def printProductData(name, price):
 
     updateScreen(dataFrame)
 
-    label_productName = Label(dataFrame, text="Product name: "+ name[:57]+"...")
-    label_productPrice = Label(dataFrame, text="Price: "+ price)
+    label_productName = Label(dataFrame, text="Product name: "+ name[:57]+"...", bg="white", font="Helvetica 10 bold")
+    label_productPrice = Label(dataFrame, text="Price: "+ price, bg="white", font="Helvetica 10 bold")
 
     label_productName.grid(row=2, column=0)
     label_productPrice.grid(row=3, column=0)
@@ -284,9 +269,13 @@ def printProductData(name, price):
 button_delete = Button(root, text="X", command=lambda: button_clear(inputField))
 button_delete.grid(row=0, column=1, sticky="WE")
 
+# Search field
+inputField = Entry(root,width=38, bg="white")
+inputField.bind("<Return>",lambda event: checkPrice(URL= inputField.get())) 
+inputField.grid(row=0, column=0, ipady=4, pady=5, padx=2, sticky="WE")
 
 # Favourite urls button
-button_favourite = Button(root, text="Favourite", command=showFavourite)
+button_favourite = Button(root, text="Favourite items", command=showFavourite)
 button_favourite.grid(row=1, column=0, sticky="EW", padx=2)
 
 # History button
@@ -298,7 +287,7 @@ button_clearHistory = Button(root, text="Clear history", command=clearHistory)
 button_clearHistory.grid(row=1, column=2, sticky="EW")
 
 # Search button
-button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()))
+button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()),bg="#c9f9ff")
 button_Search.grid(row=0, column=2, sticky="EW")
 
 root.mainloop()
