@@ -12,6 +12,11 @@ root = tk.ThemedTk(theme="breeze")
 root.title("Price Tracker")
 root.geometry("530x250")
 
+#Images used
+deleteImage = PhotoImage(file = r"img/eliminar.png")
+searchImage = PhotoImage(file = r"img/busqueda.png")
+addImage = PhotoImage(file = r"img/anadir.png")
+
 # Root frame
 dataFrame = LabelFrame(root, bg="white")
 dataFrame.grid(row=2, column=0, columnspan=3, sticky="WE")
@@ -78,10 +83,11 @@ def configureEmail():
     button_deleteFavourite = Button(configureEmailWindow, text="X", command=lambda: button_clear(inputField_email))
     button_deleteFavourite.grid(row=0, column=1, sticky="WE")
 
+# Menu
 optionsMenu = Menu(MainMenu, tearoff=False)
 MainMenu.add_cascade(label="Options", menu=optionsMenu)
 optionsMenu.add_command(label="Send an email", command= lambda: sendEmail(emailToSend))
-optionsMenu.add_checkbutton(label="Notify me lower price")
+#optionsMenu.add_checkbutton(label="Notify me lower price")
 optionsMenu.add_command(label="Configure email", command=configureEmail)
 optionsMenu.add_separator()
 optionsMenu.add_command(label="About")
@@ -196,10 +202,10 @@ def checkPrice(URL):
     # Errors handling
     except requests.exceptions.MissingSchema:
         messagebox.showwarning("Warning", "URL not valid")
-    except requests.ConnectionError:
-        messagebox.showwarning("Connection Error", "Failed to establish connection, check your internet connection")
     except requests.ConnectTimeout:
         messagebox.showinfo("Connection Timeout", "Connection timeout")
+    except requests.ConnectionError:
+        messagebox.showwarning("Connection Error", "Failed to establish connection, check your internet connection")
     except AttributeError:
         messagebox.showinfo("Info", "Product sold out or not trackable :(")
     except Exception:
@@ -226,7 +232,7 @@ def showFavourite():
     global favouriteWindow
     favouriteWindow = Toplevel(root)
     favouriteWindow.title("Favourite products")
-    favouriteWindow.geometry("400x250")
+    favouriteWindow.geometry("420x250")
 
     # Field to write an url
     global inputField_favouriteProduct
@@ -234,12 +240,12 @@ def showFavourite():
     inputField_favouriteProduct.grid(row=0, column=0, pady=5, padx=3, ipady=4)
 
     # Add button
-    button_Add = Button(favouriteWindow, text="Add", command=addFavouriteProduct, bg="#c9f9ff")
+    button_Add = Button(favouriteWindow, text="Add", command=addFavouriteProduct, bg="#c9f9ff", image = addImage, compound=LEFT)
     button_Add.grid(row=0, column=2, sticky="WE")
 
     # Delete button
     # Delete the content of the search field
-    button_deleteFavourite = Button(favouriteWindow, text="X", command=lambda: button_clear(inputField_favouriteProduct))
+    button_deleteFavourite = Button(favouriteWindow, text="X", command=lambda: button_clear(inputField_favouriteProduct), image = deleteImage)
     button_deleteFavourite.grid(row=0, column=1, sticky="WE")
 
     readFavouriteProducts()
@@ -266,7 +272,7 @@ def printProductData(name, price):
 
 # Delete button
     # Delete the content of the search field
-button_delete = Button(root, text="X", command=lambda: button_clear(inputField))
+button_delete = Button(root, text="X", command=lambda: button_clear(inputField), image = deleteImage)
 button_delete.grid(row=0, column=1, sticky="WE")
 
 # Search field
@@ -287,7 +293,7 @@ button_clearHistory = Button(root, text="Clear history", command=clearHistory)
 button_clearHistory.grid(row=1, column=2, sticky="EW")
 
 # Search button
-button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()),bg="#c9f9ff")
+button_Search = Button(root, text="Search", command=lambda: checkPrice(inputField.get()),bg="#c9f9ff", image = searchImage, compound=LEFT)
 button_Search.grid(row=0, column=2, sticky="EW")
 
 root.mainloop()
