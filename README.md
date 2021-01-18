@@ -5,8 +5,9 @@ A simple app that tracks the price of a product, for the moment it only works wi
 
 Once you cloned the repository and entered to it:
 ```
-$ pip install -r requirements.txt
 $ sudo apt install python3-tk
+$ pip install -r requirements.txt
+
 ```
 ## Usage
 Just paste an url of a product that you would like to check from the mentioned websites.
